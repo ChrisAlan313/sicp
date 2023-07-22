@@ -78,7 +78,7 @@
 ;   [x] selectors x-point and y-point
 ;   [x] define constructor make-segment
 ;   [x] define selectors start-segment and end-segment
-;   [ ] define midpoint-segment that takes a line segment as argument and
+;   [x] define midpoint-segment that takes a line segment as argument and
 ;       returns the average of the coordinates of the endpoints
 
 (define (make-point x y)
@@ -91,7 +91,7 @@
   (cdr point))
 
 (define (print-point p)
-  (newline)
+  ; (newline)
   (display "(")
   (display (x-point p))
   (display ",")
@@ -111,22 +111,13 @@
 
 (define (print-segment segment)
   (newline)
-  (let ((ss (start-segment segment)))
-    (display "(")
-    (display (x-point ss))
-    (display ",")
-    (display (y-point ss))
-    (display ")"))
+  (print-point (start-segment segment))
   (display "->")
-  (let ((es (end-segment segment)))
-    (display "(")
-    (display (x-point es))
-    (display ",")
-    (display (y-point es))
-    (display ")")))
+  (print-point (end-segment segment)))
 
-(print-segment (make-segment (make-point 2 4)
-              (make-point 6 8)))
+; (print-segment (make-segment (make-point 2 4)
+;               (make-point 6 8)))
+
 ; returns (2,4)->(6,8)
 
 ; Contains the secret sauce to prevent fractions
@@ -141,15 +132,63 @@
                   (avg-of-two (y-point ss) (y-point es))))))
 
 ; Should be (4,6) from (2,4)->(6,8)
-(print-point
-  (midpoint-segment
-    (make-segment (make-point 2 4)
-                  (make-point 6 8))))
+; (print-point
+;   (midpoint-segment
+;     (make-segment (make-point 2 4)
+;                   (make-point 6 8))))
 ; Returns (4,6)
 
 ; Should be (-0.5,2.5) from (-3,0)->(2,5)
-(print-point
-  (midpoint-segment
-    (make-segment (make-point -3 0)
-                  (make-point 2 5))))
+; (print-point
+;   (midpoint-segment
+;     (make-segment (make-point -3 0)
+;                   (make-point 2 5))))
 ; Returns (-.5,2.5)
+
+; Exercise 2.3:
+; Implement a representation for rectangles in a plane. (Hint: You may want to
+; make use of Exercise 2.2.) In terms of your constructors and selectors,
+; create procedures that compute the perimeter and the area of a given
+; rectangle. Now implement a different representation for rectangles. Can you
+; design your system with suitable abstraction barriers, so that the same
+; perimeter and area procedures will work using either representation?
+
+; So there are two kinds of rectangles that can be made here, one easier and
+; one harder. The easier is the rectangle who's sides run parallel with x and y
+; axes. Let's do that as the first representation, then the form that runs
+; cattycorner to the axes secondly. We can also throw a validator into the
+; make-rect if time, energy and motivation allow.
+
+; A rectangle is made of four lines (or "segments"). Going clockwise with
+; points a, b, c and d, those are segment a-b, b-c, c-d and d-a. You could also
+; make it with four segments, but that means redundantly using each value twice
+; rather than just naming each vertices. Perhaps provide an adapter procedure
+; that gives a user the option to validate and decompose four segments into
+; four valid vertices of a rectangle.
+
+(define (make-rect vertex-a vertex-b vertex-c vertex-d)
+  (cons (cons (make-segment vertex-a vertex-b)
+              (make-segment vertex-b vertex-c))
+        (cons (make-segment vertex-c vertex-d)
+              (make-segment vertex-d vertex-a))))
+
+(define (a-b-segment rect)
+  (car (car rect)))
+
+(define (b-c-segment rect)
+  (car (cdr rect)))
+
+(define (c-d-segment rect)
+  (cdr (car rect)))
+
+(define (d-a-segment rect)
+  (cdr (cdr rect)))
+
+(let ((rect (make-rect (make-point 0 2)
+                (make-point 4 2)
+                (make-point 4 0)
+                (make-point 0 0))))
+     (print-segment (a-b-segment rect))
+     (print-segment (b-c-segment rect))
+     (print-segment (c-d-segment rect))
+     (print-segment (d-a-segment rect)))
