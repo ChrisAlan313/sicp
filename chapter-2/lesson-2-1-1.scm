@@ -176,19 +176,54 @@
   (car (car rect)))
 
 (define (b-c-segment rect)
-  (car (cdr rect)))
+  (cdr (car rect)))
 
 (define (c-d-segment rect)
-  (cdr (car rect)))
+  (car (cdr rect)))
 
 (define (d-a-segment rect)
   (cdr (cdr rect)))
 
-(let ((rect (make-rect (make-point 0 2)
-                (make-point 4 2)
-                (make-point 4 0)
-                (make-point 0 0))))
-     (print-segment (a-b-segment rect))
-     (print-segment (b-c-segment rect))
-     (print-segment (c-d-segment rect))
-     (print-segment (d-a-segment rect)))
+(define (print-rect rect)
+  (print-segment (a-b-segment rect))
+  (print-segment (b-c-segment rect))
+  (print-segment (c-d-segment rect))
+  (print-segment (d-a-segment rect))
+  rect)
+
+(define (rect)
+  (make-rect (make-point 0 2)
+             (make-point 4 2)
+             (make-point 4 0)
+             (make-point 0 0)))
+
+; distance=√((x1−x2)^2+(y1−y2)^2)
+(define (distance point-a point-b)
+  (sqrt (+ (square (- (x-point point-a) (x-point point-b)))
+           (square (- (y-point point-a) (y-point point-b))))))
+
+(define (seg-length segment)
+  (distance (start-segment segment) (end-segment segment)))
+
+(define (rect-perimeter rect)
+  (+ (seg-length (a-b-segment rect))
+     (seg-length (b-c-segment rect))
+     (seg-length (c-d-segment rect))
+     (seg-length (d-a-segment rect))))
+
+(rect-perimeter (make-rect (make-point 0 8)
+                           (make-point 2 8)
+                           (make-point 2 0)
+                           (make-point 0 0)))
+
+(define (rect-area rect)
+  (* (seg-length (a-b-segment rect))
+     (seg-length (b-c-segment rect))))
+
+(rect-area (make-rect (make-point 0 8)
+                      (make-point 2 8)
+                      (make-point 2 0)
+                      (make-point 0 0)))
+
+; Ending the exercise here. As always, this requires more time than expected
+; and I need to move on.
